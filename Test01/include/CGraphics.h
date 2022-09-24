@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <windows.h>
+#include "CD3D.h"
 
 // =========================
 // Globals
@@ -27,5 +27,6 @@ public:
 
 private:
     bool Render();
+    CD3D* m_D3D;
 
 };

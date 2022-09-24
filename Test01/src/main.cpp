@@ -5,7 +5,7 @@
 #include <memory>
 #include "CSystem.h"
 
-int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdshow)
 {
     std::unique_ptr<CSystem> system = nullptr;
     bool result;
