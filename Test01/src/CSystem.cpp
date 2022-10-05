@@ -3,6 +3,7 @@
 // =========================
 
 #include "CSystem.h"
+#include "Common.h"
 
 CSystem::CSystem() : m_Input(nullptr), m_Graphics(nullptr)
 {
@@ -66,11 +67,7 @@ void CSystem::Shutdown()
 	}
 
 	// Relese the input object.
-	if (m_Input)
-	{
-		delete m_Input;
-		m_Input = nullptr;
-	}
+	SAFE_DELETE(m_Input);
 
 	// Shutdown the window
 	ShutdownWindows();

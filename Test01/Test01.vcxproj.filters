@@ -27,7 +27,16 @@
     <ClInclude Include="include\CD3D.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="include\SharedDefine.h">
+    <ClInclude Include="include\Common.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CColorShader.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CModel.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CCamera.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,8 +56,19 @@
     <ClCompile Include="src\CD3D.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="src\CColorShader.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CModel.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CCamera.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+    <None Include="assets\shaders\color.ps" />
+    <None Include="assets\shaders\color.vs" />
   </ItemGroup>
 </Project>

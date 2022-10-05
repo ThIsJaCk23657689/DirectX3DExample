@@ -3,7 +3,7 @@
 // =========================
 
 #include "CD3D.h"
-#include "SharedDefine.h"
+#include "Common.h"
 #include <iostream>
 
 CD3D::CD3D()
@@ -101,7 +101,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
         {
             if (displayModeList[i].Height == (UINT)screenHeight)
             {
-                numerator = displayModeList->RefreshRate.Numerator;
+                numerator = displayModeList[i].RefreshRate.Numerator;
                 denominator = displayModeList[i].RefreshRate.Denominator;
             }
         }
@@ -359,51 +359,14 @@ void CD3D::Shutdown()
         m_swapChain->SetFullscreenState(false, NULL);
     }
 
-    if (m_rasterState)
-    {
-        m_rasterState->Release();
-        m_rasterState = nullptr;
-    }
-
-    if (m_depthStencilView)
-    {
-        m_depthStencilView->Release();
-        m_depthStencilView = nullptr;
-    }
-
-    if (m_depthStencilState)
-    {
-        m_depthStencilState->Release();
-        m_depthStencilState = nullptr;
-    }
-    if (m_depthStencilBuffer)
-    {
-        m_depthStencilBuffer->Release();
-        m_depthStencilBuffer = nullptr;
-    }
-    if (m_renderTargetView)
-    {
-        m_renderTargetView->Release();
-        m_renderTargetView = nullptr;
-    }
-
-    if (m_deviceContext)
-    {
-        m_deviceContext->Release();
-        m_deviceContext = nullptr;
-    }
-
-    if (m_device)
-    {
-        m_device->Release();
-        m_device = nullptr;
-    }
-
-    if (m_swapChain)
-    {
-        m_swapChain->Release();
-        m_swapChain = nullptr;
-    }
+    SAFE_RELEASE(m_rasterState);
+    SAFE_RELEASE(m_depthStencilView);
+    SAFE_RELEASE(m_depthStencilState);
+    SAFE_RELEASE(m_depthStencilBuffer);
+    SAFE_RELEASE(m_renderTargetView);
+    SAFE_RELEASE(m_deviceContext);
+    SAFE_RELEASE(m_device);
+    SAFE_RELEASE(m_swapChain);
 
     return;
 }

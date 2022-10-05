@@ -1,10 +1,12 @@
 // =========================
 // Filename: CGraphics.h
 // =========================
-
 #pragma once
 
 #include "CD3D.h"
+#include "CCamera.h"
+#include "CModel.h"
+#include "CColorShader.h"
 
 // =========================
 // Globals
@@ -27,6 +29,10 @@ public:
 
 private:
     bool Render();
+
     CD3D* m_D3D;
+    CCamera* m_Camera;
+    CModel* m_Model;
+    CColorShader* m_ColorShader;
 
 };

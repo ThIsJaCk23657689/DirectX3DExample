@@ -1,7 +1,6 @@
 // =========================
 // Filename: CD3D.h
 // =========================
-
 #pragma once
 
 // =========================
@@ -13,6 +12,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+
 using namespace DirectX;
 
 class CD3D
