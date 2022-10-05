@@ -2,8 +2,11 @@
 // Filename: CD3D.cpp
 // =========================
 
+#include <dxgi1_2.h>
+
 #include "CD3D.h"
 #include "Common.h"
+
 #include <iostream>
 
 CD3D::CD3D()
@@ -29,29 +32,12 @@ CD3D::~CD3D()
 bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
 {
     HRESULT result;
-    IDXGIFactory* factory;
-    IDXGIAdapter* adapter;
-    IDXGIOutput* adapterOutput;
-    UINT numModes, i, numerator, denominator;
-    unsigned long long stringLength;
-    DXGI_MODE_DESC* displayModeList;
-    DXGI_ADAPTER_DESC adapterDesc;
-    INT error;
-    DXGI_SWAP_CHAIN_DESC swapChainDesc;
-    D3D_FEATURE_LEVEL featureLevel;
-    ID3D11Texture2D* backBufferPtr;
-    D3D11_TEXTURE2D_DESC depthBufferDesc;
-    D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-    D3D11_RASTERIZER_DESC rasterDesc;
-    D3D11_VIEWPORT viewport;
-    float fieldOfView, screenAspect;
-
+    
     // Store the vsync setting
     m_vsync_enabled = vsync;
 
-
     // Create a DirectX graphics interface factory.
+    IDXGIFactory* factory;
     result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
     if (FAILED(result))
     {
@@ -59,6 +45,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Use the factory to create an adapter for the primary graphics interfaces (video card).
+    IDXGIAdapter* adapter;
     result = factory->EnumAdapters(0, &adapter);
     if (FAILED(result))
     {
@@ -66,6 +53,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Enumerate the primary adapter output (monitor)
+    IDXGIOutput* adapterOutput;
     result = adapter->EnumOutputs(0, &adapterOutput);
     if (FAILED(result))
     {
@@ -73,6 +61,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8 UNORM display format for the adapter output (monitor).
+    UINT numModes = 0;
     result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
     if (FAILED(result))
     {
@@ -80,6 +69,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Create a list hold all the possible display modes for this monitor/video card combination.
+    DXGI_MODE_DESC* displayModeList;
     displayModeList = new DXGI_MODE_DESC[numModes];
     if (!displayModeList)
     {
@@ -95,7 +85,8 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
 
     // Now go through all the display modes and find the one that matches the screen width and height.
     // Where a match is found store the numerator and denominator of the refresh rate for that monitor.
-    for (i = 0; i < numModes; i++)
+    UINT numerator, denominator;
+    for (int i = 0; i < numModes; i++)
     {
         if (displayModeList[i].Width == (UINT)screenWidth)
         {
@@ -108,6 +99,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Get the adapter (video card) description.
+    DXGI_ADAPTER_DESC adapterDesc;
     result = adapter->GetDesc(&adapterDesc);
     if (FAILED(result))
     {
@@ -118,7 +110,8 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     m_videoCardMemory = (INT)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
     // Convert the name of the video card to a character array and store it.
-    error = wcstombs_s(&stringLength, m_videoCardDescription, 128, adapterDesc.Description, 128);
+    unsigned long long stringLength;
+    auto error = wcstombs_s(&stringLength, m_videoCardDescription, 128, adapterDesc.Description, 128);
     if (error != 0)
     {
         return false;
@@ -141,6 +134,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     factory = nullptr;
 
     // Initialize the swap chain description.
+    DXGI_SWAP_CHAIN_DESC swapChainDesc;
     ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
     // Set to a single back buffer.
@@ -196,7 +190,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     swapChainDesc.Flags = 0;
 
     // Set the feature level to DirectX 11.
-    featureLevel = D3D_FEATURE_LEVEL_11_0;
+    D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
     // Create the swap chain, Direct3D device, and Direct3D device context.
     result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, 
@@ -208,6 +202,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Get the pointer to the back buffer.
+    ID3D11Texture2D* backBufferPtr;
     result = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
     if (FAILED(result))
     {
@@ -226,6 +221,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     backBufferPtr = nullptr;
 
     // Initliaze the description of the depth buffer.
+    D3D11_TEXTURE2D_DESC depthBufferDesc;
     ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
     // Set up the description of the depth buffer.
@@ -249,6 +245,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     }
 
     // Initialize the description of the stencil state.
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
     ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
     // Set up the description of the stencil state.
@@ -283,6 +280,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
 
     // Initialize the depth stencil view.
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
     ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
     // Set up the depth stencil view description.
@@ -301,6 +299,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 
     // Setup the raster description which determine how and what polygons will be drawn.
+    D3D11_RASTERIZER_DESC rasterDesc;
     rasterDesc.AntialiasedLineEnable = false;
     rasterDesc.CullMode = D3D11_CULL_BACK;
     rasterDesc.DepthBias = 0;
@@ -323,6 +322,7 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     m_deviceContext->RSSetState(m_rasterState);
 
     // Setup the viewport for rendering.
+    D3D11_VIEWPORT viewport;
     viewport.Width = (float)screenWidth;
     viewport.Height = (float)screenHeight;
     viewport.MinDepth = 0.0f;
@@ -334,8 +334,8 @@ bool CD3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, 
     m_deviceContext->RSSetViewports(1, &viewport);
 
     // Setup the projection matrix.
-    fieldOfView = static_cast<float>(PI) / 4.0f;
-    screenAspect = (float)screenWidth / (float)screenHeight;
+    float fieldOfView = static_cast<float>(PI) / 4.0f;
+    float screenAspect = (float)screenWidth / (float)screenHeight;
 
     // Create the projection matrix for 3D rending.
     m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
