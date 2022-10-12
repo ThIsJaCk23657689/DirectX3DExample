@@ -4,12 +4,13 @@
 
 #include "CGraphics.h"
 #include "Common.h"
+#include <string>
 
 CGraphics::CGraphics() : 
     m_D3D(nullptr),
     m_Camera(nullptr),
     m_Model(nullptr),
-    m_ColorShader(nullptr)
+    m_TextureShader(nullptr)
 {
 }
 
@@ -42,19 +43,22 @@ bool CGraphics::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
     // Create and initialize the model object.
     m_Model = new CModel;
-    result = m_Model->Initialize(m_D3D->GetDevice());
+
+    // Set the name of the texture file that we will be loading.
+    std::string textureFilename = "assets/textures/wall.jpg";
+    result = m_Model->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), textureFilename.c_str());
     if (!result)
     {
         MessageBox(hwnd, L"Could not initialize model object.", L"Error", MB_OK);
         return false;
     }
 
-    // Create and initialize the color shader object.
-    m_ColorShader = new CColorShader;
-    result = m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd);
+    // Create and initialize the texture shader object.
+    m_TextureShader = new CTextureShader;
+    result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
     if (!result)
     {
-        MessageBox(hwnd, L"Could not initialize color shader object.", L"Error", MB_OK);
+        MessageBox(hwnd, L"Could not initialize shader object.", L"Error", MB_OK);
         return false;
     }
 
@@ -64,7 +68,7 @@ bool CGraphics::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 void CGraphics::Shutdown()
 {
     // Release the color shader object.
-    SAFE_SHUTDOWN_AND_DELETE(m_ColorShader);
+    SAFE_SHUTDOWN_AND_DELETE(m_TextureShader);
 
     // Release the model object.
     SAFE_SHUTDOWN_AND_DELETE(m_Model);
@@ -112,7 +116,9 @@ bool CGraphics::Render()
     m_Model->Render(m_D3D->GetDeviceContext());
 
     // Render the model using the color shader.
-    result = m_ColorShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+    result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), 
+                                     worldMatrix, viewMatrix, projectionMatrix, 
+                                     m_Model->GetTexture());
     if (!result) 
     {
         return false;

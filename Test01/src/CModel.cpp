@@ -5,7 +5,7 @@
 #include "CModel.h"
 #include "Common.h"
 
-CModel::CModel() : m_vertexBuffer(nullptr), m_indexBuffer(nullptr)
+CModel::CModel() : m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_texture(nullptr)
 {
 
 }
@@ -20,7 +20,7 @@ CModel::~CModel()
 
 }
 
-bool CModel::Initialize(ID3D11Device* device)
+bool CModel::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilename)
 {
 	bool result;
 
@@ -31,11 +31,21 @@ bool CModel::Initialize(ID3D11Device* device)
 		return false;
 	}
 
+	// Load the texure for this model.
+	result = LoadTexture(device, deviceContext, textureFilename);
+	if (!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 void CModel::Shutdown()
 {
+	// Release the model texture.
+	ReleaseTexture();
+	
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
 
@@ -53,6 +63,11 @@ void CModel::Render(ID3D11DeviceContext* deviceContext)
 int CModel::GetIndexCount()
 {
 	return m_indexCount;
+}
+
+ID3D11ShaderResourceView* CModel::GetTexture()
+{
+	return m_texture->GetTexture();
 }
 
 bool CModel::InitializeBuffers(ID3D11Device* device)
@@ -85,16 +100,16 @@ bool CModel::InitializeBuffers(ID3D11Device* device)
 
 	// Load the vertex array with data.
 	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[0].uv = XMFLOAT2(0.0f, 1.0f);
 
 	vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	vertices[1].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1].uv = XMFLOAT2(0.0f, 0.0f);
 
 	vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f);
-	vertices[2].color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	vertices[2].uv = XMFLOAT2(1.0f, 0.0f);
 
 	vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	vertices[3].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	vertices[3].uv = XMFLOAT2(1.0f, 1.0f);
 
 	// Load the index array with data.
 	indices[0] = 0;
@@ -183,5 +198,34 @@ void CModel::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	// Set the type of primitive that should be rendered from this vertex_buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
+	return;
+}
+
+bool CModel::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename)
+{
+	bool result;
+
+	// Create and initlize the texture object.
+	m_texture = new CTexture;
+
+	result = m_texture->Initialize(device, deviceContext, filename);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void CModel::ReleaseTexture()
+{
+	// Release the texture object.
+	if (m_texture)
+	{
+		m_texture->Shutdown();
+		delete m_texture;
+		m_texture = nullptr;
+	}
+
 	return;
 }

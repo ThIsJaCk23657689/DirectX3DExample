@@ -6,7 +6,7 @@
 #include "CD3D.h"
 #include "CCamera.h"
 #include "CModel.h"
-#include "CColorShader.h"
+#include "CTextureShader.h"
 
 // =========================
 // Globals
@@ -33,6 +33,6 @@ private:
     CD3D* m_D3D;
     CCamera* m_Camera;
     CModel* m_Model;
-    CColorShader* m_ColorShader;
+    CTextureShader* m_TextureShader;
 
 };

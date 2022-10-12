@@ -156,28 +156,35 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\CCamera.h" />
-    <ClInclude Include="include\CColorShader.h" />
+    <ClInclude Include="include\CTexture.h" />
+    <ClInclude Include="include\CTextureShader.h" />
     <ClInclude Include="include\CGraphics.h" />
     <ClInclude Include="include\CInput.h" />
     <ClInclude Include="include\CModel.h" />
     <ClInclude Include="include\CSystem.h" />
     <ClInclude Include="include\CD3D.h" />
     <ClInclude Include="include\Common.h" />
+    <ClInclude Include="include\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CCamera.cpp" />
-    <ClCompile Include="src\CColorShader.cpp" />
+    <ClCompile Include="src\CTexture.cpp" />
+    <ClCompile Include="src\CTextureShader.cpp" />
     <ClCompile Include="src\CGraphics.cpp" />
     <ClCompile Include="src\CInput.cpp" />
     <ClCompile Include="src\CModel.cpp" />
     <ClCompile Include="src\CSystem.cpp" />
     <ClCompile Include="src\CD3D.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
-    <None Include="assets\shaders\color.ps" />
-    <None Include="assets\shaders\color.vs" />
+    <None Include="assets\shaders\texture.ps" />
+    <None Include="assets\shaders\texture.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

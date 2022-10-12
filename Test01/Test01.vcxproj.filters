@@ -30,13 +30,19 @@
     <ClInclude Include="include\Common.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="include\CColorShader.h">
+    <ClInclude Include="include\CTextureShader.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="include\CModel.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="include\CCamera.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CTexture.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stb_image.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,7 +62,7 @@
     <ClCompile Include="src\CD3D.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
-    <ClCompile Include="src\CColorShader.cpp">
+    <ClCompile Include="src\CTextureShader.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
     <ClCompile Include="src\CModel.cpp">
@@ -65,10 +71,21 @@
     <ClCompile Include="src\CCamera.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="src\CTexture.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stb_image.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
-    <None Include="assets\shaders\color.ps" />
-    <None Include="assets\shaders\color.vs" />
+    <None Include="assets\shaders\texture.ps" />
+    <None Include="assets\shaders\texture.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\wall.jpg">
+      <Filter>資源檔</Filter>
+    </Image>
   </ItemGroup>
 </Project>
