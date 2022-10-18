@@ -4,6 +4,7 @@
 
 #include "CSystem.h"
 #include "Common.h"
+#include "imgui_impl_win32.h"
 
 CSystem::CSystem() : m_Input(nullptr), m_Graphics(nullptr)
 {
@@ -236,7 +237,7 @@ void CSystem::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetFocus(m_hwnd);
 	
 	// Hide the mouse cursor.
-	ShowCursor(false);
+	ShowCursor(true);
 
 	return;
 }
@@ -266,10 +267,28 @@ void CSystem::ShutdownWindows()
 	return;
 }
 
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam) 
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, umessage, wparam, lparam))
+	{
+		return true;
+	}
+	
 	switch (umessage)
 	{
+		case WM_SYSCOMMAND:
+		{
+			// Disable ALT application menu
+			if ((wparam & 0xfff0) == SC_KEYMENU)
+			{
+				return 0;
+			}
+			break;
+		}
+		
 		// Check if the window is being destroy.
 		case WM_DESTROY: 
 		{

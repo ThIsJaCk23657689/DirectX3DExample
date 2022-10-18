@@ -22,6 +22,7 @@ public:
     bool Initialize();
     void Shutdown();
     void Run();
+    CGraphics* GetGraphics() const { return m_Graphics; };
 
     LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 

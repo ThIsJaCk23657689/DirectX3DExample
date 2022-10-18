@@ -25,6 +25,7 @@ public:
 
     bool Initialize(int, int, HWND);
     void Shutdown();
+    void RenderImGui();
     bool Frame();
 
 private:
@@ -34,5 +35,8 @@ private:
     CCamera* m_Camera;
     CModel* m_Model;
     CTextureShader* m_TextureShader;
+
+    bool m_ShowDemoWindow;
+    XMFLOAT4 m_ClearColor = { 0.45f, 0.55f, 0.60f, 1.0f };
 
 };

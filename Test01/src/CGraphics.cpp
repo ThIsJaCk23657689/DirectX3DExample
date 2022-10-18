@@ -4,6 +4,9 @@
 
 #include "CGraphics.h"
 #include "Common.h"
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
 #include <string>
 
 CGraphics::CGraphics() : 
@@ -62,11 +65,28 @@ bool CGraphics::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+    // Setup Dear ImGui Style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(hwnd);
+    ImGui_ImplDX11_Init(m_D3D->GetDevice(), m_D3D->GetDeviceContext());
+
     return true;
 }
 
 void CGraphics::Shutdown()
 {
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+    
     // Release the color shader object.
     SAFE_SHUTDOWN_AND_DELETE(m_TextureShader);
 
@@ -80,6 +100,23 @@ void CGraphics::Shutdown()
     SAFE_SHUTDOWN_AND_DELETE(m_D3D);
 
     return;
+}
+
+void CGraphics::RenderImGui() 
+{
+    if (m_ShowDemoWindow)
+    {
+        ImGui::ShowDemoWindow(&m_ShowDemoWindow);
+    }
+
+    {
+        ImGui::Begin("Hello ImGui");
+        ImGui::Text("This is some useful text.");
+        ImGui::Checkbox("Demo Window", &m_ShowDemoWindow);
+        ImGui::ColorEdit3("Clear Color", (float*)&m_ClearColor);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+    }
 }
 
 bool CGraphics::Frame()
@@ -98,11 +135,19 @@ bool CGraphics::Frame()
 
 bool CGraphics::Render()
 {
+    // ImGui
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+    RenderImGui();
+    ImGui::Render();
+
+    
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
     bool result;
     
     // Clear the buffers to begin the scene.
-    m_D3D->BeginScene(0.1f, 0.1f, 0.1f, 1.0f);
+    m_D3D->BeginScene(m_ClearColor);
 
     // Generate the view matrix based on the camera's position.
     m_Camera->Render();
@@ -123,6 +168,8 @@ bool CGraphics::Render()
     {
         return false;
     }
+
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     // Present the rendered scene to the screen.
     m_D3D->EndScene();

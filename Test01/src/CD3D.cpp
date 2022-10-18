@@ -371,15 +371,15 @@ void CD3D::Shutdown()
     return;
 }
 
-void CD3D::BeginScene(float red, float green, float blue, float alpha)
+void CD3D::BeginScene(XMFLOAT4 clearColor)
 {
     float color[4];
 
     // Setup the color to clear the buffer to.
-    color[0] = red;
-    color[1] = green;
-    color[2] = blue;
-    color[3] = alpha;
+    color[0] = clearColor.x;
+    color[1] = clearColor.y;
+    color[2] = clearColor.z;
+    color[3] = clearColor.w;
 
     // Clear the back buffer.
     m_deviceContext->ClearRenderTargetView(m_renderTargetView, color);
